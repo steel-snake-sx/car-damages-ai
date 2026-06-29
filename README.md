@@ -174,7 +174,7 @@ Frontend будет доступен на `http://localhost:5173`.
 
 ## Конфигурация
 
-`appsettings.json` содержит безопасные дефолты для локального запуска. Чувствительные значения и переопределения передаются через environment variables.
+`appsettings.json` содержит безопасные дефолты для локального запуска. Чувствительные значения и переопределения передаются через environment variables или .NET user-secrets. Не храните реальные OpenAI/SMTP/JWT credentials в tracked-файлах.
 
 Пример backend-переменных находится в `backend/.env.example`:
 
@@ -184,6 +184,26 @@ cp .env.example .env
 ```
 
 Заполните значения при необходимости. Без OpenAI credentials используется mock-анализ изображений; без полной SMTP-конфигурации используется mock-отправка email.
+
+Для проверки реальных интеграций безопаснее использовать .NET user-secrets из корня репозитория:
+
+```bash
+dotnet user-secrets set --project backend/src/CarDamageClaims.Api "OpenAi:ApiKey" "<openai-api-key>"
+dotnet user-secrets set --project backend/src/CarDamageClaims.Api "OpenAi:Model" "gpt-4.1"
+dotnet user-secrets set --project backend/src/CarDamageClaims.Api "OpenAi:ProxyUrl" "<optional-socks5-proxy-url>"
+
+dotnet user-secrets set --project backend/src/CarDamageClaims.Api "Email:Host" "<smtp-host>"
+dotnet user-secrets set --project backend/src/CarDamageClaims.Api "Email:Port" "<smtp-port>"
+dotnet user-secrets set --project backend/src/CarDamageClaims.Api "Email:Username" "<smtp-username>"
+dotnet user-secrets set --project backend/src/CarDamageClaims.Api "Email:Password" "<smtp-password>"
+dotnet user-secrets set --project backend/src/CarDamageClaims.Api "Email:FromEmail" "<from-email>"
+```
+
+После локальной real-integration проверки секреты можно удалить:
+
+```bash
+dotnet user-secrets clear --project backend/src/CarDamageClaims.Api
+```
 
 Frontend использует `frontend/.env.local`:
 
