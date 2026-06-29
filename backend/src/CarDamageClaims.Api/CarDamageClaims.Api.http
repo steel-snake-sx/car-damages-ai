@@ -1,0 +1,6 @@
+@CarDamageClaims.Api_HostAddress = http://localhost:5198
+
+GET {{CarDamageClaims.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

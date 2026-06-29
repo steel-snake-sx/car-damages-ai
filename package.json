@@ -1,0 +1,12 @@
+{
+  "name": "car-damages-ai",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "typecheck": "npm --prefix frontend run typecheck",
+    "build:frontend": "npm --prefix frontend run build",
+    "build:backend": "dotnet build backend",
+    "build:all": "npm run build:frontend && npm run build:backend"
+  }
+}

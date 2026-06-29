@@ -1,0 +1,45 @@
+# node
+node_modules/
+dist/
+.vite/
+
+# .NET
+bin/
+obj/
+
+# env
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# build
+backend/.build-obj/
+
+# logs
+*.log
+.logs
+
+
+# db
+*.db
+
+# uploads
+backend/src/CarDamageClaims.Api/storage/
+
+# env
+.env
+
+# SQLite WAL
+*.db-wal
+*.db-shm
+
+
+# test
+.test
