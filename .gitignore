@@ -12,6 +12,8 @@ obj/
 .env.*
 !.env.example
 !**/.env.example
+docker-compose.override.yml
+compose.override.yml
 
 # IDE
 .vscode/

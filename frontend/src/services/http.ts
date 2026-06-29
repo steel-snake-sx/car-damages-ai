@@ -4,11 +4,7 @@ import { en } from '../locales/en'
 import { ru } from '../locales/ru'
 import type { LocaleDictionary } from '../locales/types'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
-
-if (!API_BASE_URL) {
-  throw new Error('VITE_API_BASE_URL is not set')
-}
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
 
 export class ApiError extends Error {
   status: number

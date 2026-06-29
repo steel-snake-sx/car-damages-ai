@@ -137,6 +137,33 @@ flowchart LR
 - npm
 - Docker с Docker Compose
 
+## Запуск через Docker
+
+Весь стек можно поднять одной командой из корня репозитория:
+
+```bash
+docker compose up --build
+```
+
+Будут запущены PostgreSQL, ASP.NET Core API и frontend на nginx.
+
+Адреса:
+
+- Frontend: `http://localhost:5173`
+- Backend API: `http://localhost:5000`
+- Swagger: `http://localhost:5000/swagger`
+- Health endpoint: `http://localhost:5000/api/health` (требует JWT)
+
+Docker-запуск по умолчанию работает в mock-режиме без OpenAI и SMTP credentials. PostgreSQL использует локальные dev-значения из `docker-compose.yml`, backend сам применяет EF migrations при старте и сохраняет загруженные файлы в Docker volume `backend-storage`.
+
+Реальные OpenAI/SMTP credentials не добавляйте в `docker-compose.yml`. Если нужно проверить реальные интеграции в Docker, используйте локальные environment variables или untracked `docker-compose.override.yml`.
+
+Остановить стек:
+
+```bash
+docker compose down
+```
+
 PostgreSQL:
 
 ```bash

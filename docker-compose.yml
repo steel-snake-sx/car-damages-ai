@@ -16,5 +16,42 @@ services:
       timeout: 5s
       retries: 5
 
+  backend:
+    build:
+      context: .
+      dockerfile: backend/src/CarDamageClaims.Api/Dockerfile
+    container_name: car-damage-claims-backend
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=car_damage_claims;Username=car_damage_claims;Password=car_damage_claims
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o}
+      OpenAi__ProxyUrl: ${OPENAI_PROXY_URL:-}
+      Email__Host: ${SMTP_HOST:-}
+      Email__Port: ${SMTP_PORT:-587}
+      Email__Username: ${SMTP_USERNAME:-}
+      Email__Password: ${SMTP_PASSWORD:-}
+      Email__FromName: ${SMTP_FROM_NAME:-Car Damage Claims AI}
+      Email__FromEmail: ${SMTP_FROM_EMAIL:-}
+    ports:
+      - "5000:8080"
+    volumes:
+      - backend-storage:/app/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    container_name: car-damage-claims-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
 volumes:
   postgres-data:
+  backend-storage:

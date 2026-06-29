@@ -14,7 +14,7 @@ cp .env.example .env.local
 npm run dev -- --host localhost --port 5173 --strictPort
 ```
 
-По умолчанию клиент ожидает backend на `http://localhost:5198`.
+Для локального dev-запуска `frontend/.env.local` задает `VITE_API_BASE_URL=http://localhost:5198`. В Docker runtime frontend использует относительные `/api`-запросы и nginx proxy к backend container.
 
 ## Проверка
 
