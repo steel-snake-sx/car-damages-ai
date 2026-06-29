@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: car-damage-claims-postgres
+    environment:
+      POSTGRES_DB: car_damage_claims
+      POSTGRES_USER: car_damage_claims
+      POSTGRES_PASSWORD: car_damage_claims
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U car_damage_claims -d car_damage_claims"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres-data:

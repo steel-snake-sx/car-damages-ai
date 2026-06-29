@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -19,6 +20,12 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 const long maxMultipartBodyBytes = 24 * 1024 * 1024;
+
+LoadDotEnv(builder.Configuration, Path.Combine(builder.Environment.ContentRootPath, ".env"));
+LoadDotEnv(
+    builder.Configuration,
+    Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "..", "..", ".env"))
+);
 
 var openAiApiKeyFromEnv = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
 if (!string.IsNullOrWhiteSpace(openAiApiKeyFromEnv))
@@ -116,7 +123,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 builder.Services.Configure<OpenAiOptions>(builder.Configuration.GetSection("OpenAi"));
 builder.Services.AddScoped<DamageAnalysisPrompts>();
@@ -362,4 +369,49 @@ static bool IsSmtpConfigured(EmailOptions options)
         && options.Port > 0
         && !string.IsNullOrWhiteSpace(options.Username)
         && !string.IsNullOrWhiteSpace(options.Password);
+}
+
+static void LoadDotEnv(ConfigurationManager configuration, string path)
+{
+    if (!File.Exists(path))
+    {
+        return;
+    }
+
+    foreach (var rawLine in File.ReadAllLines(path))
+    {
+        var line = rawLine.Trim();
+        if (line.Length == 0 || line.StartsWith('#'))
+        {
+            continue;
+        }
+
+        const string exportPrefix = "export ";
+        if (line.StartsWith(exportPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            line = line[exportPrefix.Length..].TrimStart();
+        }
+
+        var separatorIndex = line.IndexOf('=');
+        if (separatorIndex <= 0)
+        {
+            continue;
+        }
+
+        var key = line[..separatorIndex].Trim();
+        var value = line[(separatorIndex + 1)..].Trim().Trim('"', '\'');
+
+        if (key.Length == 0 || string.IsNullOrWhiteSpace(value))
+        {
+            continue;
+        }
+
+        if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(key)))
+        {
+            continue;
+        }
+
+        Environment.SetEnvironmentVariable(key, value);
+        configuration[key.Replace("__", ":", StringComparison.Ordinal)] = value;
+    }
 }
