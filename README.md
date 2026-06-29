@@ -1,5 +1,7 @@
 # Car Damage Claims AI
 
+[![CI](https://github.com/steel-snake-sx/car-damages-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/steel-snake-sx/car-damages-ai/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 ![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4)
 ![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core-Web_API-512BD4)
 ![EF Core](https://img.shields.io/badge/EF_Core-8.0-2C5E8B)
