@@ -28,13 +28,13 @@ public static class LocalizedMessages
 
     public static string InvalidImageTypes(AppLanguage lang) =>
         lang == AppLanguage.En
-            ? "Only JPEG, PNG, WEBP and HEIC files are allowed."
-            : "Допустимы только файлы JPEG, PNG, WEBP и HEIC.";
+            ? "Only JPEG, PNG and WEBP files are allowed. HEIC/HEIF must be converted to JPEG before upload."
+            : "Допустимы только файлы JPEG, PNG и WEBP. HEIC/HEIF нужно преобразовать в JPEG перед загрузкой.";
 
     public static string InvalidImageExtension(AppLanguage lang) =>
         lang == AppLanguage.En
-            ? "File extension must be one of: .jpg, .jpeg, .png, .webp, .heic."
-            : "Расширение файла должно быть одним из: .jpg, .jpeg, .png, .webp, .heic.";
+            ? "File extension must be one of: .jpg, .jpeg, .png, .webp."
+            : "Расширение файла должно быть одним из: .jpg, .jpeg, .png, .webp.";
 
     public static string NotCarDetected(AppLanguage lang) =>
         lang == AppLanguage.En

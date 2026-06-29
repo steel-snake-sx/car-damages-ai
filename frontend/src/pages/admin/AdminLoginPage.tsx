@@ -61,7 +61,7 @@ export function AdminLoginPage() {
           type="email"
           value={email}
           onChange={setEmail}
-          placeholder="admin@autoai.com"
+          placeholder="admin@example.com"
         />
         <Input
           label={t('auth.password')}
