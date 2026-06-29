@@ -69,7 +69,7 @@ public class AdminRequestUpdateService(AppDbContext dbContext)
                 return new UpdateRequestResult { Status = UpdateRequestStatus.ApproverMissing };
             }
 
-            request.ApprovedByUserId = null;
+            request.ApprovedByUserId = approver.Id;
         }
 
         request.UpdatedAt = DateTime.UtcNow;

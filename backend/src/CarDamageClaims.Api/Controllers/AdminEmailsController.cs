@@ -95,6 +95,10 @@ public class AdminEmailsController(
                 RequestDecisionEmail.BuildApprovalMessage(
                     notification.DamageRequest
                 ),
+            NotificationType.RejectionEmail =>
+                RequestDecisionEmail.BuildRejectionMessage(
+                    notification.DamageRequest
+                ),
             _ => null,
         };
     }

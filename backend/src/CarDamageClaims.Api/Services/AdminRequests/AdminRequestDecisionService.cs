@@ -38,7 +38,7 @@ public class AdminRequestDecisionService(
         }
 
         request.Status = DamageRequestStatus.Approved;
-        request.ApprovedByUserId = null;
+        request.ApprovedByUserId = approver.Id;
         request.UpdatedAt = DateTime.UtcNow;
 
         var approvalMessage = RequestDecisionEmail.BuildApprovalMessage(request);
@@ -100,10 +100,9 @@ public class AdminRequestDecisionService(
 
     public async Task<RejectRequestResult> RejectAsync(Guid id, CancellationToken cancellationToken)
     {
-        var request = await dbContext.DamageRequests.FirstOrDefaultAsync(
-            x => x.Id == id,
-            cancellationToken
-        );
+        var request = await dbContext
+            .DamageRequests.Include(x => x.EstimateItems)
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         if (request is null)
         {
             return new RejectRequestResult { Status = RejectRequestStatus.NotFound };
@@ -115,6 +114,49 @@ public class AdminRequestDecisionService(
         }
 
         request.Status = DamageRequestStatus.Rejected;
+        request.UpdatedAt = DateTime.UtcNow;
+
+        var rejectionMessage = RequestDecisionEmail.BuildRejectionMessage(request);
+
+        var notification = new NotificationOutbox
+        {
+            Id = Guid.NewGuid(),
+            DamageRequestId = request.Id,
+            RecipientEmail = request.Email,
+            Subject = rejectionMessage.Subject,
+            NotificationType = NotificationType.RejectionEmail,
+            Status = NotificationStatus.Pending,
+            CreatedAt = DateTime.UtcNow,
+        };
+
+        dbContext.NotificationOutbox.Add(notification);
+
+        try
+        {
+            var emailResult = await emailService.SendAsync(rejectionMessage, cancellationToken);
+
+            if (emailResult.Success)
+            {
+                notification.Status = NotificationStatus.Sent;
+                notification.SentAt = emailResult.OccurredAtUtc;
+            }
+            else
+            {
+                notification.Status = NotificationStatus.Failed;
+                notification.ErrorMessage = emailResult.ErrorMessage;
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                "Ошибка отправки email при отклонении заявки {RequestId}",
+                request.Id
+            );
+            notification.Status = NotificationStatus.Failed;
+            notification.ErrorMessage = ex.Message;
+        }
+
         request.UpdatedAt = DateTime.UtcNow;
 
         await dbContext.SaveChangesAsync(cancellationToken);
